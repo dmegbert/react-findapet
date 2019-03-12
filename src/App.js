@@ -117,15 +117,47 @@ class App extends Component {
         });
     }
 
-    getAllBreedItems(breeds) {
+    getBreedItems(breeds) {
         let items = [];
+
+        if (this.state.breeds && this.state.breedCount >= 10) {
+            breeds =  this.getTenRandomBreeds(breeds);
+        }
 
         for (let key in breeds) {
             if (breeds.hasOwnProperty(key)) {
-                items.push(<p>{breeds[key]}</p>)
+                items.push(<p key={key}>{breeds[key]}</p>)
             }
         }
+
         return items;
+    }
+
+    getTenRandomBreeds(breeds) {
+        let tenBreeds = {};
+        let keys = Object.keys(breeds);
+        keys = this.shuffle(keys);
+        keys = keys.slice(0, 9);
+
+        for (let i = 0; i < 10; i++) {
+            tenBreeds[keys[i]] = breeds[keys[i]];
+        }
+
+        return tenBreeds;
+    }
+
+    shuffle(array) {
+        let currentIndex = array.length, temporaryValue, randomIndex;
+
+        while (0 !== currentIndex) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
+        }
+
+        return array;
     }
 
     render() {
@@ -134,7 +166,7 @@ class App extends Component {
         const breedCount = this.state.breedCount;
         const breeds = this.state.breeds;
 
-        const breedItems = this.getAllBreedItems(breeds);
+        const breedItems = this.getBreedItems(breeds);
 
         const questionItems = questions.map((question) => {
             return (
@@ -153,6 +185,7 @@ class App extends Component {
                 <div>
                     <p>You are currently matched with {breedCount} dogs.</p>
                 </div>
+                <hr />
                 <div>
                     {breedItems}
                 </div>
