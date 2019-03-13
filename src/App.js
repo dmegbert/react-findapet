@@ -1,58 +1,33 @@
 import React, {Component} from 'react';
 import './App.css';
 import axios from 'axios';
+import { Question } from './question.js'
 
 
-function Checkbox(props) {
-    let className = props.answer[props.value] ? "btn active" : "btn";
-
+function ShowAllBreedsButton(props) {
     return (
-        <button className={className}
-            key={props.value}
-            onClick={props.onClick}
-        >
-            {props.value}
-        </button>
+        <div>
+            <button onClick={props.onClick} className={props.className}>
+                Show All Breeds
+            </button>
+        </div>
     );
 }
 
-class Question extends React.Component {
-    renderCheckbox(value) {
-        return (
-            <Checkbox
-                value={value}
-                questionId={this.props.question.id}
-                answer={this.props.answers[this.props.question.id]}
-                onClick={() => this.props.onClick(this.props.question.id, value)}
-            />
-        );
-    }
-
-    createQuestion() {
-        let childrenCheckboxes = [];
-        for (let j = 1; j < 6; j++) {
-            childrenCheckboxes.push(<td key={j}>{this.renderCheckbox(j)}</td>);
-        }
+function BreedItem(props) {
         return (
             <div>
-                <p>{this.props.question.text}</p>
-                <table>
-                    <tbody>
-                    <tr>
-                        {childrenCheckboxes}
-                    </tr>
-                    </tbody>
-                </table>
-                <hr />
+                <button
+                    key={props.breedKey}
+                    id={props.breedKey}
+                    className="btn"
+                    onClick={props.onClick}
+                >
+                    {props.value}
+                </button>
             </div>
-        )
-    }
-
-    render() {
-        return (this.createQuestion());
-    }
+        );
 }
-
 
 class App extends Component {
     constructor(props) {
@@ -68,27 +43,32 @@ class App extends Component {
                     id: 1,
                     name: "playfulness",
                     text: "Playfulness (You may select more than one)",
+                },
+                {
+                    id: 2,
+                    name: "friendlinessToDogs",
+                    text: "Friendliness to other Dogs."
                 }
             ],
-            answers : [
-                {
-                    1: false,
-                    2: false,
-                    3: false,
-                    4: false,
-                    5: false,
-                },
-                {
-                    1: false,
-                    2: false,
-                    3: false,
-                    4: false,
-                    5: false,
-                },
-            ],
+            answers : [],
             breedCount: 182,
             breeds: null,
+            showAllBreeds: false,
+            showSingleBreedInfo: false,
+            singleBreedInfo: "placeholder",
     };
+        let answers = [];
+        for (let i = 0; i < this.state.questions.length; i++) {
+            let answer = {
+                    1: false,
+                    2: false,
+                    3: false,
+                    4: false,
+                    5: false,
+                };
+            answers = answers.concat(answer);
+        }
+        this.state.answers = answers;
     }
 
     handleGetBreedCount() {
@@ -120,13 +100,20 @@ class App extends Component {
     getBreedItems(breeds) {
         let items = [];
 
-        if (this.state.breeds && this.state.breedCount >= 10) {
+        if (this.state.breeds && !this.state.showAllBreeds && this.state.breedCount >= 10) {
             breeds =  this.getTenRandomBreeds(breeds);
         }
 
         for (let key in breeds) {
             if (breeds.hasOwnProperty(key)) {
-                items.push(<p key={key}>{breeds[key]}</p>)
+                items.push(
+                    <BreedItem
+                        key={key}
+                        breedKey={key}
+                        value={breeds[key]}
+                        onClick={() => this.setState({showSingleBreedInfo: true})}
+                    />
+                )
             }
         }
 
@@ -137,7 +124,7 @@ class App extends Component {
         let tenBreeds = {};
         let keys = Object.keys(breeds);
         keys = this.shuffle(keys);
-        keys = keys.slice(0, 9);
+        keys = keys.slice(0, 10);
 
         for (let i = 0; i < 10; i++) {
             tenBreeds[keys[i]] = breeds[keys[i]];
@@ -165,7 +152,7 @@ class App extends Component {
         const answers = this.state.answers;
         const breedCount = this.state.breedCount;
         const breeds = this.state.breeds;
-
+        const showSingleBreedInfo = this.state.showSingleBreedInfo;
         const breedItems = this.getBreedItems(breeds);
 
         const questionItems = questions.map((question) => {
@@ -181,14 +168,32 @@ class App extends Component {
 
         return (
             <div className="App">
-                {questionItems}
+                {/*Questions and list results*/}
+                {!showSingleBreedInfo &&
                 <div>
-                    <p>You are currently matched with {breedCount} dogs.</p>
+                    {questionItems}
+                    <div>
+                        <p>You are currently matched with {breedCount} dogs.</p>
+                    </div>
+                    <hr/>
+                    <div>
+                        {breeds &&
+                        <ShowAllBreedsButton
+                            onClick={() => this.setState({showAllBreeds: !this.state.showAllBreeds})}
+                            className={this.state.showAllBreeds ? "btn active" : "btn"}
+                        />}
+                        {breedItems}
+                    </div>
                 </div>
-                <hr />
+                }
+                {/*Single Breed Information Section*/}
+                {showSingleBreedInfo &&
                 <div>
-                    {breedItems}
+                    <div>Single Dog Shit</div>
                 </div>
+                }
+
+
             </div>
 
         );
