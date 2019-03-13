@@ -55,7 +55,7 @@ class App extends Component {
             breeds: null,
             showAllBreeds: false,
             showSingleBreedInfo: false,
-            singleBreedInfo: "placeholder",
+            singleBreedInfo: null,
     };
         let answers = [];
         for (let i = 0; i < this.state.questions.length; i++) {
@@ -71,10 +71,27 @@ class App extends Component {
         this.state.answers = answers;
     }
 
+    handleGetSingleDogInfo(dogId) {
+        let dogInfo;
+
+        axios.get(`https://68hccqr7x6.execute-api.us-east-1.amazonaws.com/dev/dog/${dogId}`)
+            .then(res => {
+                dogInfo = res.data;
+                this.setState({
+                    showSingleBreedInfo: true,
+                    singleBreedInfo: dogInfo
+                });
+
+            })
+            .catch(error => {console.log(error)})
+
+    }
+
+
     handleGetBreedCount() {
         const answers = this.state.answers;
 
-        axios.post('http://localhost:5000/dog/breed_count', { answers })
+        axios.post('https://68hccqr7x6.execute-api.us-east-1.amazonaws.com/dev/dog/breed_count', { answers })
             .then(res => {
                 const breedCount = Object.keys(res.data).length;
                 const breeds = res.data;
@@ -111,7 +128,7 @@ class App extends Component {
                         key={key}
                         breedKey={key}
                         value={breeds[key]}
-                        onClick={() => this.setState({showSingleBreedInfo: true})}
+                        onClick={() => this.handleGetSingleDogInfo(key)}
                     />
                 )
             }
@@ -153,6 +170,7 @@ class App extends Component {
         const breedCount = this.state.breedCount;
         const breeds = this.state.breeds;
         const showSingleBreedInfo = this.state.showSingleBreedInfo;
+        const singleBreedInfo = this.state.singleBreedInfo;
         const breedItems = this.getBreedItems(breeds);
 
         const questionItems = questions.map((question) => {
@@ -189,7 +207,19 @@ class App extends Component {
                 {/*Single Breed Information Section*/}
                 {showSingleBreedInfo &&
                 <div>
-                    <div>Single Dog Shit</div>
+                    <div>
+                        <p>Name: {singleBreedInfo["name"]}</p>
+                        <p>Description: {singleBreedInfo["description"]}</p>
+                        <p>Personality: {singleBreedInfo["personality"]}</p>
+                    </div>
+                    <div>
+                        <button
+                            onClick={() => this.setState({singleBreedInfo: null, showSingleBreedInfo: false})}
+                            className="btn"
+                        >
+                            Go Back To Results
+                        </button>
+                    </div>
                 </div>
                 }
 
