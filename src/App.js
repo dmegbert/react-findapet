@@ -51,6 +51,10 @@ class App extends Component {
                 }
             ],
             answers : [],
+            weight: {
+                minimum: 0,
+                maximum: 300,
+            },
             breedCount: 182,
             breeds: null,
             showAllBreeds: false,
@@ -69,12 +73,32 @@ class App extends Component {
             answers = answers.concat(answer);
         }
         this.state.answers = answers;
+        this.handleChangeWeightMinimum = this.handleChangeWeightMinimum.bind(this);
+        this.handleChangeWeightMaximum = this.handleChangeWeightMaximum.bind(this);
+    }
+
+    handleChangeWeightMinimum(event) {
+        let weight = this.state.weight;
+        weight.minimum = parseFloat(event.target.value);
+
+        this.setState({weight: weight });
+
+        this.handleGetBreedCount();
+    }
+
+    handleChangeWeightMaximum(event) {
+        let weight = this.state.weight;
+        weight.maximum = parseFloat(event.target.value);
+
+        this.setState({weight: weight });
+
+        this.handleGetBreedCount();
     }
 
     handleGetSingleDogInfo(dogId) {
         let dogInfo;
 
-        axios.get(`https://68hccqr7x6.execute-api.us-east-1.amazonaws.com/dev/dog/${dogId}`)
+        axios.get(`${process.env.REACT_APP_BASE_URL}/dog/${dogId}`)
             .then(res => {
                 dogInfo = res.data;
                 this.setState({
@@ -90,8 +114,10 @@ class App extends Component {
 
     handleGetBreedCount() {
         const answers = this.state.answers;
+        const weight = this.state.weight;
+        const data = {answers, weight};
 
-        axios.post('https://68hccqr7x6.execute-api.us-east-1.amazonaws.com/dev/dog/breed_count', { answers })
+        axios.post(`${process.env.REACT_APP_BASE_URL}/dog/breed_count`, { data })
             .then(res => {
                 const breedCount = Object.keys(res.data).length;
                 const breeds = res.data;
@@ -190,6 +216,16 @@ class App extends Component {
                 {!showSingleBreedInfo &&
                 <div>
                     {questionItems}
+                    <div>
+                        <div>
+                            <label>Minimum Weight: </label>
+                            <input type="number" pattern="[0-9]*" name="weightMinimum" onChange={this.handleChangeWeightMinimum}/>
+                        </div>
+                        <div>
+                            <label>Maximum Weight: </label>
+                            <input type="number" onChange={this.handleChangeWeightMaximum}/>
+                        </div>
+                    </div>
                     <div>
                         <p>You are currently matched with {breedCount} dogs.</p>
                     </div>
