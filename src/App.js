@@ -223,7 +223,7 @@ class App extends Component {
                         </div>
                         <div>
                             <label>Maximum Weight: </label>
-                            <input type="number" onChange={this.handleChangeWeightMaximum}/>
+                            <input type="number" pattern="[0-9]*" onChange={this.handleChangeWeightMaximum}/>
                         </div>
                     </div>
                     <div>
