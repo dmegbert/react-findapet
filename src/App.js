@@ -37,18 +37,28 @@ class App extends Component {
                 {
                     id: 0,
                     name : "energy",
-                    text: "Energy Level (You may select more than one)",
+                    text: "Energy Level",
                 },
                 {
                     id: 1,
                     name: "playfulness",
-                    text: "Playfulness (You may select more than one)",
+                    text: "Level of playfulness",
                 },
                 {
                     id: 2,
                     name: "friendlinessToDogs",
-                    text: "Friendliness to other Dogs."
-                }
+                    text: "Friendliness to other dogs"
+                },
+                {
+                    id: 3,
+                    name: "easeOfTraining",
+                    text: "Ease of training"
+                },
+                {
+                    id: 4,
+                    name: "grooming",
+                    text: "Grooming needs (1 is little, 5 is a lot)"
+                },
             ],
             answers : [],
             weight: {
@@ -191,14 +201,8 @@ class App extends Component {
     }
 
     render() {
-        const questions = this.state.questions;
-        const answers = this.state.answers;
-        const breedCount = this.state.breedCount;
-        const breeds = this.state.breeds;
-        const showSingleBreedInfo = this.state.showSingleBreedInfo;
-        const singleBreedInfo = this.state.singleBreedInfo;
+        const {questions, answers, breedCount, breeds, showSingleBreedInfo, singleBreedInfo} = this.state;
         const breedItems = this.getBreedItems(breeds);
-
         const questionItems = questions.map((question) => {
             return (
                <Question
@@ -212,6 +216,9 @@ class App extends Component {
 
         return (
             <div className="App">
+                <div>
+                    <h1 align="center">Find the Best Dog for You!</h1>
+                </div>
                 {/*Questions and list results*/}
                 {!showSingleBreedInfo &&
                 <div>
