@@ -29,6 +29,17 @@ function BreedItem(props) {
         );
 }
 
+function BackToResultsButton(props) {
+    return (
+        <button
+            onClick={props.onClick}
+            className={props.className}
+        >
+            Go Back To Results
+        </button>
+    )
+}
+
 class App extends Component {
     constructor(props) {
         super(props);
@@ -111,6 +122,7 @@ class App extends Component {
         axios.get(`${process.env.REACT_APP_BASE_URL}/dog/${dogId}`)
             .then(res => {
                 dogInfo = res.data;
+                dogInfo['id'] = dogId;
                 this.setState({
                     showSingleBreedInfo: true,
                     singleBreedInfo: dogInfo
@@ -251,17 +263,25 @@ class App extends Component {
                 {showSingleBreedInfo &&
                 <div>
                     <div>
-                        <p>Name: {singleBreedInfo["name"]}</p>
-                        <p>Description: {singleBreedInfo["description"]}</p>
-                        <p>Personality: {singleBreedInfo["personality"]}</p>
+                        <img src={`./img/dog-${singleBreedInfo["id"]}.jpg`} alt={`${singleBreedInfo["name"]}`}/>
                     </div>
                     <div>
-                        <button
+                        <BackToResultsButton
                             onClick={() => this.setState({singleBreedInfo: null, showSingleBreedInfo: false})}
                             className="btn"
-                        >
-                            Go Back To Results
-                        </button>
+                        />
+                    </div>
+                    <div>
+                        <p><strong>Name:</strong> {singleBreedInfo["name"]}</p>
+                        <p><strong>Description:</strong> {singleBreedInfo["description"]}</p>
+                        <p><strong>Personality:</strong> {singleBreedInfo["personality"]}</p>
+                        <p><strong>History:</strong> {singleBreedInfo["history"]}</p>
+                    </div>
+                    <div>
+                        <BackToResultsButton
+                            onClick={() => this.setState({singleBreedInfo: null, showSingleBreedInfo: false})}
+                            className="btn"
+                        />
                     </div>
                 </div>
                 }
