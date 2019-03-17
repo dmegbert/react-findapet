@@ -40,9 +40,25 @@ function BackToResultsButton(props) {
     )
 }
 
+function Stars(props) {
+    let items = [];
+    let solidStars = props.solidStars;
+
+    for (let i = 1; i < 6; i++) {
+        if (i <= solidStars) {
+            items.push(<i className="fas fa-star" aria-hidden="true"/>)
+        }
+        else {
+            items.push(<i className="far fa-star" aria-hidden="true"/>)
+        }
+    }
+    return items;
+}
+
 class App extends Component {
     constructor(props) {
         super(props);
+        this.myRef = React.createRef();
         this.state = {
             questions : [
                 {
@@ -212,6 +228,13 @@ class App extends Component {
         return array;
     }
 
+    componentDidMount() {
+
+        if (this.state.showSingleBreedInfo) {
+            this.myRef.current.scrollTo(0, 0);
+        }
+    }
+
     render() {
         const {questions, answers, breedCount, breeds, showSingleBreedInfo, singleBreedInfo} = this.state;
         const breedItems = this.getBreedItems(breeds);
@@ -227,7 +250,7 @@ class App extends Component {
         });
 
         return (
-            <div className="App">
+            <div className="App" ref={this.myRef}>
                 <div>
                     <h1 align="center">Find the Best Dog for You!</h1>
                 </div>
@@ -264,6 +287,7 @@ class App extends Component {
                 <div>
                     <div>
                         <img src={`./img/dog-${singleBreedInfo["id"]}.jpg`} alt={`${singleBreedInfo["name"]}`}/>
+                        <h2>{singleBreedInfo["name"]}</h2>
                     </div>
                     <div>
                         <BackToResultsButton
@@ -272,7 +296,22 @@ class App extends Component {
                         />
                     </div>
                     <div>
-                        <p><strong>Name:</strong> {singleBreedInfo["name"]}</p>
+                        <p><strong>Energy Level: </strong><Stars solidStars={this.state.singleBreedInfo["energy_level"]} /></p>
+                        <p><strong>Playfulness: </strong><Stars solidStars={this.state.singleBreedInfo["playfulness"]} /></p>
+                        <p><strong>Friendliness to Dogs: </strong><Stars solidStars={this.state.singleBreedInfo["friendliness_to_dogs"]} /></p>
+                        <p><strong>Friendliness to Other Pets: </strong><Stars solidStars={this.state.singleBreedInfo["friendliness_to_other_pets"]} /></p>
+                        <p><strong>Friendliness to New People: </strong><Stars solidStars={this.state.singleBreedInfo["friendliness_to_strangers"]} /></p>
+                        <p><strong>Ease of Training: </strong><Stars solidStars={this.state.singleBreedInfo["ease_of_training"]} /></p>
+                        <p><strong>Grooming Needs: </strong><Stars solidStars={this.state.singleBreedInfo["grooming_requirements"]} /></p>
+                        <p><strong>Exercise Needs: </strong><Stars solidStars={this.state.singleBreedInfo["exercise_requirements"]} /></p>
+                        <p><strong>Affection Level: </strong><Stars solidStars={this.state.singleBreedInfo["affection_level"]} /></p>
+                        <p><strong>Watchfulness: </strong><Stars solidStars={this.state.singleBreedInfo["watchfulness"]} /></p>
+                        <p><strong>Heat Sensitivity: </strong><Stars solidStars={this.state.singleBreedInfo["heat_sensitivity"]} /></p>
+                        <p><strong>Vocality: </strong><Stars solidStars={this.state.singleBreedInfo["vocality"]} /></p>
+                        <p><strong>Weight: </strong>{`${singleBreedInfo["weight_min"]}lbs - ${singleBreedInfo["weight_max"]}lbs`}</p>
+                        <p><strong>Height: </strong>{`${singleBreedInfo["height_min"]}" - ${singleBreedInfo["height_max"]}"`}</p>
+                    </div>
+                    <div>
                         <p><strong>Description:</strong> {singleBreedInfo["description"]}</p>
                         <p><strong>Personality:</strong> {singleBreedInfo["personality"]}</p>
                         <p><strong>History:</strong> {singleBreedInfo["history"]}</p>
