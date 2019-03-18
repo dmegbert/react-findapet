@@ -46,10 +46,10 @@ function Stars(props) {
 
     for (let i = 1; i < 6; i++) {
         if (i <= solidStars) {
-            items.push(<i className="fas fa-star" aria-hidden="true"/>)
+            items.push(<i key={i} className="fas fa-star" aria-hidden="true"/>)
         }
         else {
-            items.push(<i className="far fa-star" aria-hidden="true"/>)
+            items.push(<i key={i} className="far fa-star" aria-hidden="true"/>)
         }
     }
     return items;
@@ -86,6 +86,11 @@ class App extends Component {
                     name: "grooming",
                     text: "Grooming needs (1 is little, 5 is a lot)"
                 },
+                {
+                    id: 5,
+                    name: "Vocality",
+                    text: "Vocality Level"
+                }
             ],
             answers : [],
             weight: {
@@ -97,6 +102,9 @@ class App extends Component {
             showAllBreeds: false,
             showSingleBreedInfo: false,
             singleBreedInfo: null,
+            showFullHistory: false,
+            showFullPersonality: false,
+            showFullDescription: false
     };
         let answers = [];
         for (let i = 0; i < this.state.questions.length; i++) {
@@ -228,15 +236,11 @@ class App extends Component {
         return array;
     }
 
-    componentDidMount() {
-
-        if (this.state.showSingleBreedInfo) {
-            this.myRef.current.scrollTo(0, 0);
-        }
-    }
-
     render() {
-        const {questions, answers, breedCount, breeds, showSingleBreedInfo, singleBreedInfo} = this.state;
+        const {
+            questions, answers, breedCount, breeds, showSingleBreedInfo,
+            singleBreedInfo, showFullHistory, showFullPersonality, showFullDescription
+        } = this.state;
         const breedItems = this.getBreedItems(breeds);
         const questionItems = questions.map((question) => {
             return (
@@ -312,9 +316,26 @@ class App extends Component {
                         <p><strong>Height: </strong>{`${singleBreedInfo["height_min"]}" - ${singleBreedInfo["height_max"]}"`}</p>
                     </div>
                     <div>
-                        <p><strong>Description:</strong> {singleBreedInfo["description"]}</p>
-                        <p><strong>Personality:</strong> {singleBreedInfo["personality"]}</p>
-                        <p><strong>History:</strong> {singleBreedInfo["history"]}</p>
+                        <p><strong>Description:</strong>
+                            {showFullDescription ? singleBreedInfo["description"] : `${singleBreedInfo["description"].substring(0, 300)}...`}
+                            <button className="read-more-btn" onClick={() => this.setState({showFullDescription: !showFullDescription})}>
+                                {showFullDescription ? 'Read Less' : 'Read More'}
+                            </button>
+                        </p>
+                        <p>
+                            <strong>Personality:</strong>
+                            {showFullPersonality || (singleBreedInfo["personality"].length <= 300) ? singleBreedInfo["personality"] : `${singleBreedInfo["personality"].substring(0, 300)}...`}
+                            {!(singleBreedInfo["personality"].length <= 300) && <button className="read-more-btn" onClick={() => this.setState({showFullPersonality: !showFullPersonality})}>
+                                {showFullPersonality ? 'Read Less' : 'Read More'}
+                            </button>}
+                        </p>
+                        <p>
+                            <strong>History:</strong>
+                            {showFullHistory ? singleBreedInfo["history"] : `${singleBreedInfo["history"].substring(0, 300)}...`}
+                            <button className="read-more-btn" onClick={() => this.setState({showFullHistory: !showFullHistory})}>
+                                {showFullHistory ? 'Read Less' : 'Read More'}
+                            </button>
+                        </p>
                     </div>
                     <div>
                         <BackToResultsButton

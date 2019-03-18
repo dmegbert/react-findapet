@@ -7,6 +7,15 @@
   font-size: 18px;
 }
 
+.read-more-btn {
+  border: 1px solid black;
+  outline: none;
+  padding: 3px;
+  background-color: #f1f1f1;
+  cursor: pointer;
+  font-size: 12px;
+}
+
 /* Style the active class, and buttons on mouse-over */
 .active{
   background-color: forestgreen;
