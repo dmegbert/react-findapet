@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import './App.css';
 import axios from 'axios';
-import { Question } from './question.js'
+import Question from './Question'
 
 
 function ShowAllBreedsButton(props) {
@@ -54,6 +54,10 @@ function Stars(props) {
 	}
 	return items;
 }
+
+// const App = () => {
+// 	const [{questions, answers}, setQuestionsAnswers] = useState
+// }
 
 class App extends Component {
 	constructor(props) {
