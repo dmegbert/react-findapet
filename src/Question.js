@@ -3,23 +3,23 @@ import React from "react";
 import Checkbox from './Checkbox'
 
 
-const Question = ({question, answers, onClick}) => {
+const Question = ({questionId, questionText, onClick, answer}) => {
 	let childrenCheckboxes = [];
 	for (let j = 1; j < 6; j++) {
 		childrenCheckboxes.push(
 			<td key={j}>
 				<Checkbox
 					value={j}
-					questionId={question.id}
-					answer={answers[question.id]}
-					onClick={() => onClick(question.id, j)}
+					questionId={questionId}
+					answer={answer}
+					onClick={() => onClick(j)}
 				/>
 			</td>
 		);
 	}
 	return (
 		<div>
-			<p>{question.text}</p>
+			<p>{questionText}</p>
 			<table>
 				<tbody>
 				<tr>
