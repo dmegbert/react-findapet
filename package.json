@@ -36,5 +36,28 @@
   "devDependencies": {
     "eslint-plugin-react-hooks": "^1.6.0",
     "react-app-env": "^1.2.3"
+  },
+  "prettier": {
+    "arrowParens": "avoid",
+    "bracketSpacing": true,
+    "endOfLine": "lf",
+    "htmlWhitespaceSensitivity": "css",
+    "jsxBracketSameLine": false,
+    "printWidth": 100,
+    "proseWrap": "preserve",
+    "requirePragma": false,
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "all",
+    "useTabs": false,
+    "overrides": [
+      {
+        "files": "*.json",
+        "options": {
+          "printWidth": 200
+        }
+      }
+    ]
   }
 }
