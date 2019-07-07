@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './App.css'
 import axios from 'axios'
-import { Question, ShowAllBreedsButton, Stars, BackToResultsButton, BreedItem } from './components'
+import { BreedCount, BreedItem, Question, ShowAllBreedsButton, SingleBreed } from './components'
 
 const myQuestions = [
   {
@@ -36,6 +36,51 @@ const myQuestions = [
   },
 ]
 
+let myAnswers = [
+  {
+    '1': false,
+    '2': false,
+    '3': false,
+    '4': false,
+    '5': false,
+  },
+  {
+    '1': false,
+    '2': false,
+    '3': false,
+    '4': false,
+    '5': false,
+  },
+  {
+    '1': false,
+    '2': false,
+    '3': false,
+    '4': false,
+    '5': false,
+  },
+  {
+    '1': false,
+    '2': false,
+    '3': false,
+    '4': false,
+    '5': false,
+  },
+  {
+    '1': false,
+    '2': false,
+    '3': false,
+    '4': false,
+    '5': false,
+  },
+  {
+    '1': false,
+    '2': false,
+    '3': false,
+    '4': false,
+    '5': false,
+  },
+]
+
 function setInitialAnswers(questions) {
   let initialAnswers = []
   for (let i = 0; i < questions.length; i++) {
@@ -56,22 +101,85 @@ const App = () => {
     minimum: 0,
     maximum: 300,
   })
-  const [{ questions, answers }, setQuestionsAnswers] = useState({
-    questions: myQuestions,
-    answers: setInitialAnswers(myQuestions),
-  })
-  const [{ breedCount, breeds }, setBreedInfo] = useState({
-    breedCount: 182,
-    breeds: null,
-  })
+  const [questions, setQuestions] = useState(myQuestions)
+  const [answers, setAnswers] = useState(myAnswers)
+  //const initialAnswers = setInitialAnswers(myQuestions)
+  const [breeds, setBreedInfo] = useState(null)
+  const [breedCount, setBreedCount] = useState(182)
   const [showAllBreeds, setShowAllBreeds] = useState(false)
-  const [showFullHistory, setShowFullHistory] = useState(false)
-  const [showFullPersonality, setShowFullPersonality] = useState(false)
-  const [showFullDescription, setShowFullDescription] = useState(false)
-  const [{ singleBreedInfo, showSingleBreedInfo }, setSingleBreedInfo] = useState({
-    singleBreedInfo: null,
-    showSingleBreedInfo: false,
-  })
+  const [showSingleBreedInfo, setShowSingleBreedInfo] = useState(false)
+  const [singleBreedId, setSingleBreedId] = useState(null)
+
+  // useEffect(() => {
+  //
+  //     const weight = { minimum: 1, maximum: 300 }
+  //     const data = {
+  //       answers,
+  //       weight,
+  //     }
+  //     console.log(answers)
+  //     debugger
+  //
+  //     axios
+  //       .post(`${process.env.REACT_APP_BASE_URL}/dog/breed_count`, { data })
+  //       .then(res => {
+  //         setBreedInfo(res.data)
+  //         setBreedCount(Object.keys(res.data).length)
+  //       })
+  //       .catch(error => {
+  //         console.log(error)
+  //       })
+//
+      //   function getTenRandomBreeds(breeds) {
+      //   let tenBreeds = {}
+      //   let keys = Object.keys(breeds)
+      //   keys = shuffle(keys)
+      //   keys = keys.slice(0, 10)
+      //
+      //   for (let i = 0; i < 10; i++) {
+      //     tenBreeds[keys[i]] = breeds[keys[i]]
+      //   }
+      //
+      //   return tenBreeds
+      // }
+
+      // if (breeds && !showAllBreeds && breedCount >= 10) {
+      //   let tenRandomBreeds = getTenRandomBreeds(breeds)
+      //   setBreedInfo(tenRandomBreeds)
+      // }
+  //   }, [breeds, breedCount, answers],
+  // )
+
+  function handleGetBreedCount() {
+    const weight = { minimum: minimum, maximum: maximum }
+      const data = {
+        answers,
+        weight,
+      }
+
+      axios
+        .post(`${process.env.REACT_APP_BASE_URL}/dog/breed_count`, { data })
+        .then(res => {
+          setBreedInfo(res.data)
+          setBreedCount(Object.keys(res.data).length)
+        })
+        .catch(error => {
+          console.log(error)
+        })
+  }
+
+    function getTenRandomBreeds(breeds) {
+        let tenBreeds = {}
+        let keys = Object.keys(breeds)
+        keys = shuffle(keys)
+        keys = keys.slice(0, 10)
+
+        for (let i = 0; i < 10; i++) {
+          tenBreeds[keys[i]] = breeds[keys[i]]
+        }
+
+        return tenBreeds
+      }
 
   function handleChangeWeightMinimum(event) {
     setWeight({
@@ -89,40 +197,6 @@ const App = () => {
     handleGetBreedCount()
   }
 
-  function handleGetSingleDogInfo(dogId) {
-    let dogInfo
-
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}/dog/${dogId}`)
-      .then(res => {
-        dogInfo = res.data
-        dogInfo['id'] = dogId
-        setSingleBreedInfo({
-          showSingleBreedInfo: true,
-          singleBreedInfo: dogInfo,
-        })
-      })
-      .catch(error => {
-        console.log(error)
-      })
-  }
-
-  function handleGetBreedCount() {
-    const weight = { minimum: minimum, maximum: maximum }
-    const data = { answers, weight }
-
-    axios
-      .post(`${process.env.REACT_APP_BASE_URL}/dog/breed_count`, { data })
-      .then(res => {
-        setBreedInfo({
-          breedCount: Object.keys(res.data).length,
-          breeds: res.data,
-        })
-      })
-      .catch(error => {
-        console.log(error)
-      })
-  }
 
   function getBreedItems(breeds) {
     let items = []
@@ -138,7 +212,10 @@ const App = () => {
             key={key}
             breedKey={key}
             value={breeds[key]}
-            onClick={() => handleGetSingleDogInfo(key)}
+            onClick={() => {
+              setSingleBreedId(key)
+              setShowSingleBreedInfo(true)
+            }}
           />,
         )
       }
@@ -147,18 +224,34 @@ const App = () => {
     return items
   }
 
-  function getTenRandomBreeds(breeds) {
-    let tenBreeds = {}
-    let keys = Object.keys(breeds)
-    keys = shuffle(keys)
-    keys = keys.slice(0, 10)
+//   const getTenRandomBreeds = useCallback(
+//   () => {
+//     let tenBreeds = {}
+//     let keys = Object.keys(breeds)
+//     keys = shuffle(keys)
+//     keys = keys.slice(0, 10)
+//
+//     for (let i = 0; i < 10; i++) {
+//       tenBreeds[keys[i]] = breeds[keys[i]]
+//     }
+//
+//     return tenBreeds
+//   },
+//   [breeds],
+// );
 
-    for (let i = 0; i < 10; i++) {
-      tenBreeds[keys[i]] = breeds[keys[i]]
-    }
-
-    return tenBreeds
-  }
+  // function getTenRandomBreeds(breeds) {
+  //   let tenBreeds = {}
+  //   let keys = Object.keys(breeds)
+  //   keys = shuffle(keys)
+  //   keys = keys.slice(0, 10)
+  //
+  //   for (let i = 0; i < 10; i++) {
+  //     tenBreeds[keys[i]] = breeds[keys[i]]
+  //   }
+  //
+  //   return tenBreeds
+  // }
 
   function shuffle(array) {
     let currentIndex = array.length,
@@ -177,9 +270,9 @@ const App = () => {
   }
 
   function handleQuestionBoxClick(checkboxValue, question) {
-    let prevAnswers = answers
-    prevAnswers[question.id][checkboxValue] = !prevAnswers[question.id][checkboxValue]
-    setQuestionsAnswers({ answers: prevAnswers, questions: questions })
+    let newAnswers = answers
+    newAnswers[question.id][checkboxValue] = !newAnswers[question.id][checkboxValue]
+    setAnswers(newAnswers)
     handleGetBreedCount()
   }
 
@@ -196,14 +289,10 @@ const App = () => {
     )
   })
 
-  function resetSingleBreedInfo() {
-    setSingleBreedInfo({ singleBreedInfo: null, showSingleBreedInfo: false })
-  }
-
   return (
     <div className="App">
       <div>
-        <h1 align="center">Find the Best Dog for You!</h1>
+        <h1>Find the Best Dog for You!</h1>
       </div>
       {/*Questions and list results*/}
       {!showSingleBreedInfo && (
@@ -230,10 +319,8 @@ const App = () => {
               />
             </div>
           </div>
-          <div>
-            <p>You are currently matched with {breedCount} dogs.</p>
-          </div>
-          <hr />
+          <BreedCount breedCount={breedCount}/>
+          <hr/>
           <div>
             {breeds && (
               <ShowAllBreedsButton
@@ -247,119 +334,9 @@ const App = () => {
       )}
       {/*Single Breed Information Section*/}
       {showSingleBreedInfo && (
-        <div>
-          <div>
-            <img
-              src={`./img/dog-${singleBreedInfo['id']}.jpg`}
-              alt={`${singleBreedInfo['name']}`}
-            />
-            <h2>{singleBreedInfo['name']}</h2>
-          </div>
-          <div>
-            <BackToResultsButton onClick={() => resetSingleBreedInfo()} />
-          </div>
-          <div>
-            <p>
-              <strong>Energy Level: </strong>
-              <Stars solidStars={singleBreedInfo['energy_level']} />
-            </p>
-            <p>
-              <strong>Playfulness: </strong>
-              <Stars solidStars={singleBreedInfo['playfulness']} />
-            </p>
-            <p>
-              <strong>Friendliness to Dogs: </strong>
-              <Stars solidStars={singleBreedInfo['friendliness_to_dogs']} />
-            </p>
-            <p>
-              <strong>Friendliness to Other Pets: </strong>
-              <Stars solidStars={singleBreedInfo['friendliness_to_other_pets']} />
-            </p>
-            <p>
-              <strong>Friendliness to New People: </strong>
-              <Stars solidStars={singleBreedInfo['friendliness_to_strangers']} />
-            </p>
-            <p>
-              <strong>Ease of Training: </strong>
-              <Stars solidStars={singleBreedInfo['ease_of_training']} />
-            </p>
-            <p>
-              <strong>Grooming Needs: </strong>
-              <Stars solidStars={singleBreedInfo['grooming_requirements']} />
-            </p>
-            <p>
-              <strong>Exercise Needs: </strong>
-              <Stars solidStars={singleBreedInfo['exercise_requirements']} />
-            </p>
-            <p>
-              <strong>Affection Level: </strong>
-              <Stars solidStars={singleBreedInfo['affection_level']} />
-            </p>
-            <p>
-              <strong>Watchfulness: </strong>
-              <Stars solidStars={singleBreedInfo['watchfulness']} />
-            </p>
-            <p>
-              <strong>Heat Sensitivity: </strong>
-              <Stars solidStars={singleBreedInfo['heat_sensitivity']} />
-            </p>
-            <p>
-              <strong>Vocality: </strong>
-              <Stars solidStars={singleBreedInfo['vocality']} />
-            </p>
-            <p>
-              <strong>Weight: </strong>
-              {`${singleBreedInfo['weight_min']}lbs - ${singleBreedInfo['weight_max']}lbs`}
-            </p>
-            <p>
-              <strong>Height: </strong>
-              {`${singleBreedInfo['height_min']}" - ${singleBreedInfo['height_max']}"`}
-            </p>
-          </div>
-          <div>
-            <p>
-              <strong>Description:</strong>
-              {showFullDescription
-                ? singleBreedInfo['description']
-                : `${singleBreedInfo['description'].substring(0, 300)}...`}
-              <button
-                className="read-more-btn"
-                onClick={() => setShowFullDescription(!showFullDescription)}
-              >
-                {showFullDescription ? 'Read Less' : 'Read More'}
-              </button>
-            </p>
-            <p>
-              <strong>Personality:</strong>
-              {showFullPersonality || singleBreedInfo['personality'].length <= 300
-                ? singleBreedInfo['personality']
-                : `${singleBreedInfo['personality'].substring(0, 300)}...`}
-              {!(singleBreedInfo['personality'].length <= 300) && (
-                <button
-                  className="read-more-btn"
-                  onClick={() => setShowFullPersonality(!showFullPersonality)}
-                >
-                  {showFullPersonality ? 'Read Less' : 'Read More'}
-                </button>
-              )}
-            </p>
-            <p>
-              <strong>History:</strong>
-              {showFullHistory
-                ? singleBreedInfo['history']
-                : `${singleBreedInfo['history'].substring(0, 300)}...`}
-              <button
-                className="read-more-btn"
-                onClick={() => setShowFullHistory(!showFullHistory)}
-              >
-                {showFullHistory ? 'Read Less' : 'Read More'}
-              </button>
-            </p>
-          </div>
-          <div>
-            <BackToResultsButton onClick={() => resetSingleBreedInfo()} />
-          </div>
-        </div>
+        <SingleBreed
+          singleBreedId={singleBreedId}
+        />
       )}
     </div>
   )
