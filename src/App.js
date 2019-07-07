@@ -81,77 +81,53 @@ let myAnswers = [
   },
 ]
 
-function setInitialAnswers(questions) {
-  let initialAnswers = []
-  for (let i = 0; i < questions.length; i++) {
-    let answer = {
-      1: false,
-      2: false,
-      3: false,
-      4: false,
-      5: false,
-    }
-    initialAnswers = initialAnswers.concat(answer)
-  }
-  return initialAnswers
+// function setInitialAnswers(questions) {
+//   let initialAnswers = []
+//   for (let i = 0; i < questions.length; i++) {
+//     let answer = {
+//       1: false,
+//       2: false,
+//       3: false,
+//       4: false,
+//       5: false,
+//     }
+//     initialAnswers = initialAnswers.concat(answer)
+//   }
+//   return initialAnswers
+// }
+
+const WeightMinAndMax = ({ label, weight, name, onChange }) => {
+
+  return (
+    <div>
+      <label>{label} </label>
+      <input
+        //value={weight}
+        type="number"
+        pattern="[0-9]*"
+        name={name}
+        onChange={onChange}
+      />
+    </div>
+  )
 }
 
 const App = () => {
-  const [{ minimum, maximum }, setWeight] = useState({
-    minimum: 0,
-    maximum: 300,
-  })
-  const [questions, setQuestions] = useState(myQuestions)
+  const [minimum, setWeightMinimum] = useState(0)
+  const [maximum, setWeightMaximum] = useState(300)
+  const [questions] = useState(myQuestions)
   const [answers, setAnswers] = useState(myAnswers)
-  //const initialAnswers = setInitialAnswers(myQuestions)
   const [breeds, setBreedInfo] = useState(null)
   const [breedCount, setBreedCount] = useState(182)
   const [showAllBreeds, setShowAllBreeds] = useState(false)
   const [showSingleBreedInfo, setShowSingleBreedInfo] = useState(false)
   const [singleBreedId, setSingleBreedId] = useState(null)
+  const [fetchData, setFetchData] = useState(false)
 
-  // useEffect(() => {
-  //
-  //     const weight = { minimum: 1, maximum: 300 }
-  //     const data = {
-  //       answers,
-  //       weight,
-  //     }
-  //     console.log(answers)
-  //     debugger
-  //
-  //     axios
-  //       .post(`${process.env.REACT_APP_BASE_URL}/dog/breed_count`, { data })
-  //       .then(res => {
-  //         setBreedInfo(res.data)
-  //         setBreedCount(Object.keys(res.data).length)
-  //       })
-  //       .catch(error => {
-  //         console.log(error)
-  //       })
-//
-      //   function getTenRandomBreeds(breeds) {
-      //   let tenBreeds = {}
-      //   let keys = Object.keys(breeds)
-      //   keys = shuffle(keys)
-      //   keys = keys.slice(0, 10)
-      //
-      //   for (let i = 0; i < 10; i++) {
-      //     tenBreeds[keys[i]] = breeds[keys[i]]
-      //   }
-      //
-      //   return tenBreeds
-      // }
+  useEffect(() => {
 
-      // if (breeds && !showAllBreeds && breedCount >= 10) {
-      //   let tenRandomBreeds = getTenRandomBreeds(breeds)
-      //   setBreedInfo(tenRandomBreeds)
-      // }
-  //   }, [breeds, breedCount, answers],
-  // )
-
-  function handleGetBreedCount() {
-    const weight = { minimum: minimum, maximum: maximum }
+    if (fetchData) {
+      const weight = { minimum: minimum, maximum: maximum }
       const data = {
         answers,
         weight,
@@ -160,43 +136,50 @@ const App = () => {
       axios
         .post(`${process.env.REACT_APP_BASE_URL}/dog/breed_count`, { data })
         .then(res => {
-          setBreedInfo(res.data)
+          if (showAllBreeds) {
+            setBreedInfo(res.data)
+          } else {
+            setBreedInfo(limitBreedsShown(res.data))
+          }
           setBreedCount(Object.keys(res.data).length)
         })
         .catch(error => {
           console.log(error)
         })
+    }
+  }, [answers, minimum, maximum, showAllBreeds])
+
+  function limitBreedsShown(breedData) {
+    let tenBreeds = breedData
+    if (breedData && Object.keys(breedData).length >= 10) {
+      tenBreeds = getTenRandomBreeds(breedData)
+    }
+    return tenBreeds
   }
 
-    function getTenRandomBreeds(breeds) {
-        let tenBreeds = {}
-        let keys = Object.keys(breeds)
-        keys = shuffle(keys)
-        keys = keys.slice(0, 10)
 
-        for (let i = 0; i < 10; i++) {
-          tenBreeds[keys[i]] = breeds[keys[i]]
-        }
+  function getTenRandomBreeds(breeds) {
+    let tenBreeds = {}
+    let keys = Object.keys(breeds)
+    keys = shuffle(keys)
+    keys = keys.slice(0, 10)
 
-        return tenBreeds
-      }
+    for (let i = 0; i < 10; i++) {
+      tenBreeds[keys[i]] = breeds[keys[i]]
+    }
+
+    return tenBreeds
+  }
 
   function handleChangeWeightMinimum(event) {
-    setWeight({
-      minimum: parseFloat(event.target.value),
-      maximum: maximum,
-    })
-    handleGetBreedCount()
+    setWeightMinimum(parseFloat(event.target.value))
+    setFetchData(true)
   }
 
   function handleChangeWeightMaximum(event) {
-    setWeight({
-      maximum: parseFloat(event.target.value),
-      minimum: minimum,
-    })
-    handleGetBreedCount()
+    setWeightMaximum(parseFloat(event.target.value))
+    setFetchData(true)
   }
-
 
   function getBreedItems(breeds) {
     let items = []
@@ -224,34 +207,6 @@ const App = () => {
     return items
   }
 
-//   const getTenRandomBreeds = useCallback(
-//   () => {
-//     let tenBreeds = {}
-//     let keys = Object.keys(breeds)
-//     keys = shuffle(keys)
-//     keys = keys.slice(0, 10)
-//
-//     for (let i = 0; i < 10; i++) {
-//       tenBreeds[keys[i]] = breeds[keys[i]]
-//     }
-//
-//     return tenBreeds
-//   },
-//   [breeds],
-// );
-
-  // function getTenRandomBreeds(breeds) {
-  //   let tenBreeds = {}
-  //   let keys = Object.keys(breeds)
-  //   keys = shuffle(keys)
-  //   keys = keys.slice(0, 10)
-  //
-  //   for (let i = 0; i < 10; i++) {
-  //     tenBreeds[keys[i]] = breeds[keys[i]]
-  //   }
-  //
-  //   return tenBreeds
-  // }
 
   function shuffle(array) {
     let currentIndex = array.length,
@@ -270,13 +225,14 @@ const App = () => {
   }
 
   function handleQuestionBoxClick(checkboxValue, question) {
-    let newAnswers = answers
+    let newAnswers = answers.slice()
     newAnswers[question.id][checkboxValue] = !newAnswers[question.id][checkboxValue]
     setAnswers(newAnswers)
-    handleGetBreedCount()
+    setFetchData(true)
   }
 
   const breedItems = getBreedItems(breeds)
+
   const questionItems = questions.map(question => {
     return (
       <Question
@@ -289,6 +245,10 @@ const App = () => {
     )
   })
 
+  function toggleShowSingleBreedInfo() {
+    setShowSingleBreedInfo(false)
+  }
+
   return (
     <div className="App">
       <div>
@@ -299,25 +259,16 @@ const App = () => {
         <div>
           {questionItems}
           <div>
-            <div>
-              <label>Minimum Weight: </label>
-              <input
-                value={minimum}
-                type="number"
-                pattern="[0-9]*"
-                name="weightMinimum"
-                onChange={handleChangeWeightMinimum}
-              />
-            </div>
-            <div>
-              <label>Maximum Weight: </label>
-              <input
-                type="number"
-                value={maximum}
-                pattern="[0-9]*"
-                onChange={handleChangeWeightMaximum}
-              />
-            </div>
+            <WeightMinAndMax
+              name={'weightMinimum'}
+              label={'Minimum Weight'}
+              onChange={(e) => handleChangeWeightMinimum(e)}
+            />
+            <WeightMinAndMax
+              name={'weightMaximum'}
+              label={'Maximum Weight'}
+              onChange={handleChangeWeightMaximum}
+            />
           </div>
           <BreedCount breedCount={breedCount}/>
           <hr/>
@@ -336,6 +287,7 @@ const App = () => {
       {showSingleBreedInfo && (
         <SingleBreed
           singleBreedId={singleBreedId}
+          toggleShowSingleBreedInfo={toggleShowSingleBreedInfo}
         />
       )}
     </div>
