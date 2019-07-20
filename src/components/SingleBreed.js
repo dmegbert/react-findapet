@@ -1,18 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { BackToResultsButton, Stars } from './index'
+import { BackToResultsButton, Stars, DogImage } from './index'
 import axios from 'axios'
-
-const DogImage = ({imageId, altName}) => {
-
-  return (
-    <div>
-      <img
-        src={`./img/dog-${imageId}.jpg`}
-        alt={altName}
-      />
-    </div>
-  )
-}
 
 
 const SingleBreed = ({ singleBreedId, toggleShowSingleBreedInfo }) => {

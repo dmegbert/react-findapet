@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './App.css'
 import axios from 'axios'
-import { BreedCount, BreedItem, Question, ShowAllBreedsButton, SingleBreed } from './components'
+import { BreedCount, BreedItem, Question, ShowAllBreedsButton, SingleBreed, WeightMinAndMax } from './components'
 
 const myQuestions = [
   {
@@ -81,37 +81,6 @@ let myAnswers = [
   },
 ]
 
-// function setInitialAnswers(questions) {
-//   let initialAnswers = []
-//   for (let i = 0; i < questions.length; i++) {
-//     let answer = {
-//       1: false,
-//       2: false,
-//       3: false,
-//       4: false,
-//       5: false,
-//     }
-//     initialAnswers = initialAnswers.concat(answer)
-//   }
-//   return initialAnswers
-// }
-
-const WeightMinAndMax = ({ label, weight, name, onChange }) => {
-
-  return (
-    <div>
-      <label>{label} </label>
-      <input
-        //value={weight}
-        type="number"
-        pattern="[0-9]*"
-        name={name}
-        onChange={onChange}
-      />
-    </div>
-  )
-}
-
 const App = () => {
   const [minimum, setWeightMinimum] = useState(0)
   const [maximum, setWeightMaximum] = useState(300)
@@ -181,12 +150,8 @@ const App = () => {
     setFetchData(true)
   }
 
-  function getBreedItems(breeds) {
+  function getBreedItems() {
     let items = []
-
-    if (breeds && !showAllBreeds && breedCount >= 10) {
-      breeds = getTenRandomBreeds(breeds)
-    }
 
     for (let key in breeds) {
       if (breeds.hasOwnProperty(key)) {
@@ -231,7 +196,8 @@ const App = () => {
     setFetchData(true)
   }
 
-  const breedItems = getBreedItems(breeds)
+  const breedItems = getBreedItems()
+
 
   const questionItems = questions.map(question => {
     return (
@@ -260,11 +226,13 @@ const App = () => {
           {questionItems}
           <div>
             <WeightMinAndMax
+              weight={minimum}
               name={'weightMinimum'}
               label={'Minimum Weight'}
-              onChange={(e) => handleChangeWeightMinimum(e)}
+              onChange={handleChangeWeightMinimum}
             />
             <WeightMinAndMax
+              weight={maximum}
               name={'weightMaximum'}
               label={'Maximum Weight'}
               onChange={handleChangeWeightMaximum}
