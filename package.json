@@ -9,7 +9,7 @@
     "react-dom": "^16.8.4",
     "react-scripts": "2.1.8",
     "stop-runaway-react-effects": "^1.2.0",
-    "yarn": "^1.16.0"
+    "yarn": "^1.22.0"
   },
   "scripts": {
     "start": "react-app-env start",
