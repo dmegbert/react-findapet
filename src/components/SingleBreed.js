@@ -32,7 +32,6 @@ const SingleBreed = ({ singleBreedId, toggleShowSingleBreedInfo }) => {
     return (
       <div>
         <DogImage
-          imageId={singleBreedInfo['id']}
           altName={singleBreedInfo['name']}
         />
         <div>
@@ -114,10 +113,10 @@ const SingleBreed = ({ singleBreedId, toggleShowSingleBreedInfo }) => {
           </p>
           <p>
             <strong>Personality:</strong>
-            {showFullPersonality || singleBreedInfo['personality'].length <= 300
-              ? singleBreedInfo['personality']
-              : `${singleBreedInfo['personality'].substring(0, 300)}...`}
-            {!(singleBreedInfo['personality'].length <= 300) && (
+            {showFullPersonality || singleBreedInfo['temperament'].length <= 300
+              ? singleBreedInfo['temperament']
+              : `${singleBreedInfo['temperament'].substring(0, 300)}...`}
+            {!(singleBreedInfo['temperament'].length <= 300) && (
               <button
                 className="read-more-btn"
                 onClick={() => setShowFullPersonality(!showFullPersonality)}

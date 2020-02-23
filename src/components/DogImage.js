@@ -1,10 +1,10 @@
 import React from 'react'
 
-const DogImage = ({imageId, altName}) => {
+const DogImage = ({altName}) => {
   return (
     <div>
       <img
-        src={`./img/dog-${imageId}.jpg`}
+        src={`./img/${altName}.jpg`}
         alt={altName}
       />
     </div>
