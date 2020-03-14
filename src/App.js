@@ -87,7 +87,7 @@ const App = () => {
   const [questions] = useState(myQuestions)
   const [answers, setAnswers] = useState(myAnswers)
   const [breeds, setBreedInfo] = useState(null)
-  const [breedCount, setBreedCount] = useState(182)
+  const [breedCount, setBreedCount] = useState(215)
   const [showAllBreeds, setShowAllBreeds] = useState(false)
   const [showSingleBreedInfo, setShowSingleBreedInfo] = useState(false)
   const [singleBreedId, setSingleBreedId] = useState(null)
