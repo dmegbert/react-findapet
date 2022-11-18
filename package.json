@@ -7,7 +7,7 @@
     "prettier": "^1.18.2",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
-    "react-scripts": "2.1.8",
+    "react-scripts": "5.0.1",
     "stop-runaway-react-effects": "^1.2.0",
     "yarn": "^1.16.0"
   },
